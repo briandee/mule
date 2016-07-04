@@ -10,7 +10,7 @@ import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder
 import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromFixedValue;
 import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromSimpleParameter;
 import static org.mule.runtime.config.spring.dsl.api.TypeDefinition.fromType;
-import static org.mule.runtime.config.spring.dsl.api.xml.NameUtils.hyphenize;
+import static org.mule.runtime.extension.api.util.NameUtils.hyphenize;
 import static org.mule.runtime.module.extension.internal.xml.SchemaConstants.CONFIG_ATTRIBUTE;
 import org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinition;
 import org.mule.runtime.core.api.MuleContext;
@@ -18,6 +18,7 @@ import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.retry.RetryPolicyTemplate;
 import org.mule.runtime.extension.api.introspection.RuntimeExtensionModel;
 import org.mule.runtime.extension.api.introspection.source.RuntimeSourceModel;
+import org.mule.runtime.extension.xml.dsl.api.resolver.DslElementResolver;
 import org.mule.runtime.module.extension.internal.config.dsl.ExtensionDefinitionParser;
 import org.mule.runtime.module.extension.internal.runtime.source.ExtensionMessageSource;
 
@@ -34,9 +35,9 @@ public class SourceDefinitionParser extends ExtensionDefinitionParser
     private final RuntimeSourceModel sourceModel;
     private final MuleContext muleContext;
 
-    public SourceDefinitionParser(ComponentBuildingDefinition.Builder definition, RuntimeExtensionModel extensionModel, RuntimeSourceModel sourceModel, MuleContext muleContext)
+    public SourceDefinitionParser(ComponentBuildingDefinition.Builder definition, RuntimeExtensionModel extensionModel, RuntimeSourceModel sourceModel, DslElementResolver dslElementResolver, MuleContext muleContext)
     {
-        super(definition);
+        super(definition, dslElementResolver);
         this.extensionModel = extensionModel;
         this.sourceModel = sourceModel;
         this.muleContext = muleContext;

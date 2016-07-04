@@ -9,8 +9,6 @@ package org.mule.runtime.module.extension.internal.config.dsl.parameter;
 import static org.mule.metadata.utils.MetadataTypeUtils.getDefaultValue;
 import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromFixedValue;
 import static org.mule.runtime.config.spring.dsl.api.TypeDefinition.fromType;
-import static org.mule.runtime.config.spring.dsl.api.xml.NameUtils.getTopLevelTypeName;
-import static org.mule.runtime.config.spring.dsl.api.xml.NameUtils.hyphenize;
 import static org.mule.runtime.extension.api.introspection.declaration.type.TypeUtils.acceptsReferences;
 import static org.mule.runtime.extension.api.introspection.declaration.type.TypeUtils.getExpressionSupport;
 import org.mule.metadata.api.model.ArrayType;
@@ -22,6 +20,8 @@ import org.mule.metadata.api.visitor.MetadataTypeVisitor;
 import org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinition.Builder;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.extension.api.introspection.parameter.ExpressionSupport;
+import org.mule.runtime.extension.xml.dsl.api.DslElementDeclaration;
+import org.mule.runtime.extension.xml.dsl.api.resolver.DslElementResolver;
 import org.mule.runtime.module.extension.internal.config.dsl.ExtensionDefinitionParser;
 import org.mule.runtime.module.extension.internal.runtime.resolver.ValueResolver;
 
@@ -39,18 +39,20 @@ public class TopLevelParameterParser extends ExtensionDefinitionParser
 
     private final ObjectType type;
     private final ClassLoader classLoader;
+    private final DslElementDeclaration typeDsl;
 
-    public TopLevelParameterParser(Builder definition, ObjectType type, ClassLoader classLoader)
+    public TopLevelParameterParser(Builder definition, ObjectType type, ClassLoader classLoader, DslElementResolver dslElementResolver)
     {
-        super(definition);
+        super(definition, dslElementResolver);
         this.type = type;
         this.classLoader = classLoader;
+        this.typeDsl = dslElementResolver.resolve(type);
     }
 
     @Override
     protected void doParse(Builder definitionBuilder) throws ConfigurationException
     {
-        definitionBuilder.withIdentifier(hyphenize(getTopLevelTypeName(type)))
+        definitionBuilder.withIdentifier(typeDsl.getElementName())
                 .withTypeDefinition(fromType(ValueResolver.class))
                 .withObjectFactoryType(TopLevelParameterObjectFactory.class)
                 .withConstructorParameterDefinition(fromFixedValue(type).build())
@@ -63,6 +65,7 @@ public class TopLevelParameterParser extends ExtensionDefinitionParser
             final boolean acceptsReferences = acceptsReferences(objectField);
             final Object defaultValue = getDefaultValue(fieldType).orElse(null);
             final ExpressionSupport expressionSupport = getExpressionSupport(fieldType);
+            final DslElementDeclaration childDsl = typeDsl.getChild(parameterName).orElse(dslElementResolver.resolve(fieldType));
 
             fieldType.accept(new MetadataTypeVisitor()
             {
@@ -76,19 +79,20 @@ public class TopLevelParameterParser extends ExtensionDefinitionParser
                 @Override
                 public void visitObject(ObjectType objectType)
                 {
-                    parseObjectParameter(parameterName, parameterName, objectType, defaultValue, expressionSupport, false, acceptsReferences);
+
+                    parseObjectParameter(parameterName, parameterName, objectType, defaultValue, expressionSupport, false, acceptsReferences, childDsl);
                 }
 
                 @Override
                 public void visitArrayType(ArrayType arrayType)
                 {
-                    parseCollectionParameter(parameterName, parameterName, arrayType, defaultValue, expressionSupport, false);
+                    parseCollectionParameter(parameterName, parameterName, arrayType, defaultValue, expressionSupport, false, childDsl);
                 }
 
                 @Override
                 public void visitDictionary(DictionaryType dictionaryType)
                 {
-                    parseMapParameters(parameterName, parameterName, dictionaryType, defaultValue, expressionSupport, false);
+                    parseMapParameters(parameterName, parameterName, dictionaryType, defaultValue, expressionSupport, false, childDsl);
                 }
             });
         }

@@ -15,6 +15,7 @@ import static org.junit.Assert.fail;
 import org.mule.functional.junit4.ExtensionFunctionalTestCase;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.construct.Flow;
+import org.mule.tck.junit4.rule.WarningTimeout;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.model.Ricin;
 import org.mule.test.subtypes.extension.CarDoor;
@@ -32,6 +33,7 @@ import org.mule.test.vegan.extension.VeganExtension;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.rules.TestRule;
 
 public class SubTypesMappingParserTestCase extends ExtensionFunctionalTestCase
 {
@@ -46,6 +48,12 @@ public class SubTypesMappingParserTestCase extends ExtensionFunctionalTestCase
     protected String getConfigFile()
     {
         return "subtypes-mapping.xml";
+    }
+
+    @Override
+    protected TestRule createTestTimeoutRule()
+    {
+        return new WarningTimeout(100000);
     }
 
     @Test

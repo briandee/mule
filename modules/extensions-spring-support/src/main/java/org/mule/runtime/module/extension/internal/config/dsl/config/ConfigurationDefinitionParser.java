@@ -11,15 +11,16 @@ import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder
 import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromSimpleParameter;
 import static org.mule.runtime.config.spring.dsl.api.TypeDefinition.fromType;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getConnectedComponents;
-import static org.mule.runtime.config.spring.dsl.api.xml.NameUtils.hyphenize;
 import org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinition.Builder;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.extension.api.introspection.config.RuntimeConfigurationModel;
 import org.mule.runtime.extension.api.runtime.ConfigurationProvider;
+import org.mule.runtime.extension.xml.dsl.api.DslElementDeclaration;
+import org.mule.runtime.extension.xml.dsl.api.resolver.DslElementResolver;
 import org.mule.runtime.module.extension.internal.config.dsl.ExtensionDefinitionParser;
-import org.mule.runtime.module.extension.internal.runtime.resolver.ConnectionProviderResolver;
 import org.mule.runtime.module.extension.internal.runtime.DynamicConfigPolicy;
+import org.mule.runtime.module.extension.internal.runtime.resolver.ConnectionProviderResolver;
 
 /**
  * A {@link ExtensionDefinitionParser} for parsing {@link ConfigurationProvider}
@@ -32,18 +33,28 @@ public final class ConfigurationDefinitionParser extends ExtensionDefinitionPars
 
     private final RuntimeConfigurationModel configurationModel;
     private final MuleContext muleContext;
+    private final DslElementDeclaration configDsl;
 
-    public ConfigurationDefinitionParser(Builder definition, RuntimeConfigurationModel configurationModel, MuleContext muleContext)
+    public ConfigurationDefinitionParser(Builder definition, RuntimeConfigurationModel configurationModel, DslElementResolver dslResolver, MuleContext muleContext)
     {
-        super(definition);
+        super(definition, dslResolver);
         this.configurationModel = configurationModel;
         this.muleContext = muleContext;
+        this.configDsl = dslResolver.resolve(configurationModel);
     }
 
     @Override
     protected void doParse(Builder definitionBuilder) throws ConfigurationException
     {
-        definitionBuilder.withIdentifier(hyphenize(configurationModel.getName()))
+        //definitionBuilder.withIdentifier(hyphenize(configurationModel.getName()))
+        //        .withTypeDefinition(fromType(ConfigurationProvider.class))
+        //        .withObjectFactoryType(ConfigurationProviderObjectFactory.class)
+        //        .withConstructorParameterDefinition(fromSimpleParameter("name").build())
+        //        .withConstructorParameterDefinition(fromFixedValue(configurationModel).build())
+        //        .withConstructorParameterDefinition(fromFixedValue(muleContext).build())
+        //        .withSetterParameterDefinition("dynamicConfigPolicy", fromChildConfiguration(DynamicConfigPolicy.class).build());
+
+        definitionBuilder.withIdentifier(configDsl.getElementName())
                 .withTypeDefinition(fromType(ConfigurationProvider.class))
                 .withObjectFactoryType(ConfigurationProviderObjectFactory.class)
                 .withConstructorParameterDefinition(fromSimpleParameter("name").build())

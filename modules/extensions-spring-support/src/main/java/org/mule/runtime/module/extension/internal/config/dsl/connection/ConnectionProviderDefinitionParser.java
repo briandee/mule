@@ -10,13 +10,14 @@ import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder
 import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromFixedValue;
 import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromSimpleParameter;
 import static org.mule.runtime.config.spring.dsl.api.TypeDefinition.fromType;
-import static org.mule.runtime.config.spring.dsl.api.xml.NameUtils.hyphenize;
+import static org.mule.runtime.extension.api.util.NameUtils.hyphenize;
 import org.mule.runtime.api.config.PoolingProfile;
 import org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinition.Builder;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.retry.RetryPolicyTemplate;
 import org.mule.runtime.extension.api.introspection.connection.ConnectionProviderModel;
+import org.mule.runtime.extension.xml.dsl.api.resolver.DslElementResolver;
 import org.mule.runtime.module.extension.internal.config.dsl.ExtensionDefinitionParser;
 import org.mule.runtime.module.extension.internal.runtime.resolver.ConnectionProviderResolver;
 
@@ -32,9 +33,9 @@ public final class ConnectionProviderDefinitionParser extends ExtensionDefinitio
     private final ConnectionProviderModel providerModel;
     private final MuleContext muleContext;
 
-    public ConnectionProviderDefinitionParser(Builder definition, ConnectionProviderModel providerModel, MuleContext muleContext)
+    public ConnectionProviderDefinitionParser(Builder definition, ConnectionProviderModel providerModel, DslElementResolver dslElementResolver, MuleContext muleContext)
     {
-        super(definition);
+        super(definition, dslElementResolver);
         this.providerModel = providerModel;
         this.muleContext = muleContext;
     }
