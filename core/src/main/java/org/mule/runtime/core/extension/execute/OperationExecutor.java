@@ -7,12 +7,10 @@
 package org.mule.runtime.core.extension.execute;
 
 
-import org.mule.runtime.core.DefaultMuleMessage;
 import org.mule.runtime.core.DefaultOperationMuleEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleException;
-import org.mule.runtime.core.api.MuleMessage;
 import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
@@ -44,10 +42,10 @@ public class OperationExecutor implements MessageProcessor, Initialisable, MuleC
     @Override
     public MuleEvent process(MuleEvent event) throws MuleException
     {
-        MuleEvent defaultOperationMuleEvent = createOperationMuleEvent(event);
-        MuleEvent processResult = getOperationChain().process(defaultOperationMuleEvent);
-        MuleMessage messageResult = processResult.getMessage();
-        event.setMessage(new DefaultMuleMessage(messageResult));
+        //MuleEvent defaultOperationMuleEvent = createOperationMuleEvent(event);
+        //MuleEvent processResult = getOperationChain().process(defaultOperationMuleEvent);
+        //MuleMessage messageResult = processResult.getMessage();
+        //event.setMessage(new DefaultMuleMessage(messageResult));
         return event;
     }
 
