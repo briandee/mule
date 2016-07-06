@@ -6,13 +6,7 @@
  */
 package org.mule.runtime.core;
 
-import static java.lang.String.format;
-import static java.nio.charset.Charset.defaultCharset;
 import static java.util.Objects.requireNonNull;
-import static org.mule.runtime.core.api.config.MuleProperties.CONTENT_TYPE_PROPERTY;
-import static org.mule.runtime.core.api.config.MuleProperties.MULE_CORRELATION_ID_PROPERTY;
-import static org.mule.runtime.core.api.config.MuleProperties.MULE_ENCODING_PROPERTY;
-import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
 
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.DataTypeBuilder;
@@ -73,9 +67,9 @@ public class DefaultMuleMessageBuilder implements MuleMessage.Builder, MuleMessa
     private void copyMessageAttributes(MuleMessage message)
     {
         this.id = message.getUniqueId();
-        this.correlationId = message.getCorrelationId();
-        this.correlationSequence = message.getCorrelationSequence();
-        this.correlationGroupSize = message.getCorrelationGroupSize();
+        this.correlationId = message.getCorrelation().getId();
+        this.correlationSequence = message.getCorrelation().getSequence();
+        this.correlationGroupSize = message.getCorrelation().getGroupSize();
         this.replyTo = message.getReplyTo();
         this.rootId = message.getMessageRootId();
         this.exceptionPayload = message.getExceptionPayload();
@@ -359,46 +353,42 @@ public class DefaultMuleMessageBuilder implements MuleMessage.Builder, MuleMessa
     private void updateDataTypeWithProperty(String key, Object value)
     {
         // updates dataType when encoding is updated using a property instead of using #setEncoding
-        if (MULE_ENCODING_PROPERTY.equals(key))
-        {
-            final Class type = dataType != null ? dataType.getType() : Object.class;
-            dataType = DataType.builder().type(type).charset((String) value).build();
-        }
-        else if (CONTENT_TYPE_PROPERTY.equalsIgnoreCase(key))
-        {
-            final DataTypeBuilder builder = DataType.builder();
-            try
-            {
-                builder.mediaType((String) value);
-            }
-            catch (IllegalArgumentException e)
-            {
-                if (Boolean.parseBoolean(System.getProperty(SYSTEM_PROPERTY_PREFIX + "strictContentType")))
-                {
-                    throw new IllegalArgumentException("Invalid Content-Type property value", e);
-                }
-                else
-                {
-                    String encoding = defaultCharset().name();
-                    logger.warn(format("%s when parsing Content-Type '%s': %s", e.getClass().getName(), value, e.getMessage()));
-                    logger.warn(format("Using defualt encoding: %s", encoding));
-                    builder.charset(encoding);
-                }
-            }
-            final Class type = dataType != null ? dataType.getType() : Object.class;
-            dataType = builder.type(type).build();
-        }
-        else if (MULE_CORRELATION_ID_PROPERTY.equalsIgnoreCase(key))
-        {
-            correlationId = value.toString();
-        }
-        else if ("MULE_REPLYTO".equalsIgnoreCase(key))
-        {
-            if(replyTo == null)
-            {
-                replyTo = value;
-            }
-        }
+        // if (MULE_ENCODING_PROPERTY.equals(key))
+        // {
+        // final Class type = dataType != null ? dataType.getType() : Object.class;
+        // dataType = DataType.builder().type(type).charset((String) value).build();
+        // }
+        // else if (CONTENT_TYPE_PROPERTY.equalsIgnoreCase(key))
+        // {
+        // final DataTypeBuilder builder = DataType.builder();
+        // try
+        // {
+        // builder.mediaType((String) value);
+        // }
+        // catch (IllegalArgumentException e)
+        // {
+        // if (Boolean.parseBoolean(System.getProperty(SYSTEM_PROPERTY_PREFIX + "strictContentType")))
+        // {
+        // throw new IllegalArgumentException("Invalid Content-Type property value", e);
+        // }
+        // else
+        // {
+        // String encoding = defaultCharset().name();
+        // logger.warn(format("%s when parsing Content-Type '%s': %s", e.getClass().getName(), value, e.getMessage()));
+        // logger.warn(format("Using defualt encoding: %s", encoding));
+        // builder.charset(encoding);
+        // }
+        // }
+        // final Class type = dataType != null ? dataType.getType() : Object.class;
+        // dataType = builder.type(type).build();
+        // }
+        // else if (MULE_REPLY_TO_PROPERTY.equalsIgnoreCase(key))
+        // {
+        // if(replyTo == null)
+        // {
+        // replyTo = value;
+        // }
+        // }
     }
 
 }

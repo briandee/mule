@@ -13,7 +13,6 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mule.runtime.api.metadata.DataType.BOOLEAN;
 import static org.mule.runtime.api.metadata.DataType.HTML_STRING;
 import static org.mule.runtime.api.metadata.DataType.STRING;
@@ -22,6 +21,7 @@ import static org.mule.runtime.api.metadata.MediaType.ANY;
 import static org.mule.runtime.api.metadata.MediaType.HTML;
 import static org.mule.runtime.api.metadata.MediaType.TEXT;
 import static org.mule.runtime.api.metadata.MediaType.XML;
+
 import org.mule.runtime.api.message.NullPayload;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.DefaultMuleMessageBuilder;
@@ -42,6 +42,8 @@ import javax.activation.DataHandler;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 /**
  *
@@ -424,9 +426,9 @@ public class DefaultMuleMessageBuilderTestCase extends AbstractMuleTestCase
         assertThat(message.getDataType(), is(TEXT_STRING));
         assertThat(message.getAttributes(), is(TEST_ATTR));
         assertThat(message.getMessageRootId(), equalTo("1"));
-        assertThat(message.getCorrelationId(), equalTo("2"));
-        assertThat(message.getCorrelationGroupSize(), equalTo(3));
-        assertThat(message.getCorrelationSequence(), equalTo(4));
+        assertThat(message.getCorrelation().getId(), equalTo("2"));
+        assertThat(message.getCorrelation().getGroupSize(), equalTo(3));
+        assertThat(message.getCorrelation().getSequence(), equalTo(4));
         assertThat(message.getReplyTo(), is(REPLY_TO));
     }
 

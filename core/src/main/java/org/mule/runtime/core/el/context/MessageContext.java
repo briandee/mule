@@ -8,6 +8,7 @@ package org.mule.runtime.core.el.context;
 
 import org.mule.runtime.api.message.NullPayload;
 import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.core.MuleMessageCorrelation;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleMessage;
@@ -56,19 +57,9 @@ public class MessageContext
         return event.getMessage().getMessageRootId();
     }
 
-    public String getCorrelationId()
+    public MuleMessageCorrelation getCorrelation()
     {
-        return event.getMessage().getCorrelationId();
-    }
-
-    public Integer getCorrelationSequence()
-    {
-        return event.getMessage().getCorrelationSequence();
-    }
-
-    public Integer getCorrelationGroupSize()
-    {
-        return event.getMessage().getCorrelationGroupSize();
+        return event.getMessage().getCorrelation();
     }
 
     public Object getReplyTo()
