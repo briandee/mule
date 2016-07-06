@@ -39,6 +39,8 @@ import org.mule.runtime.api.message.MuleMessage;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.MetadataKey;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataDescriptor;
+import org.mule.runtime.api.metadata.descriptor.OutputMetadataDescriptor;
+import org.mule.runtime.api.metadata.descriptor.TypeMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.core.DefaultMuleMessage;
 import org.mule.runtime.core.api.MuleContext;
@@ -501,12 +503,12 @@ public class OperationMessageProcessorTestCase extends AbstractMuleContextTestCa
 
         assertThat(metadata.isSuccess(), is(true));
 
-        assertThat(metadata.get().getOutputMetadata().getPayloadMetadata().getType(), is(outputMock.getType()));
+        assertThat(metadata.get().getOutputMetadata().get().getPayloadMetadata().get().getType(), is(outputMock.getType()));
 
-        assertThat(metadata.get().getContentMetadata().get().getType(), is(stringType));
+        assertThat(metadata.get().getContentMetadata().get().get().getType(), is(stringType));
 
         assertThat(metadata.get().getParametersMetadata().size(), is(1));
-        assertThat(metadata.get().getParametersMetadata().get(0).getType(), is(stringType));
+        assertThat(metadata.get().getParametersMetadata().get(0).get().getType(), is(stringType));
     }
 
 
@@ -517,13 +519,17 @@ public class OperationMessageProcessorTestCase extends AbstractMuleContextTestCa
 
         assertThat(metadata.isSuccess(), is(true));
 
-        assertThat(metadata.get().getOutputMetadata().getPayloadMetadata().getType(), is(TYPE_BUILDER.booleanType().build()));
-        assertThat(metadata.get().getOutputMetadata().getAttributesMetadata().getType(), is(TYPE_BUILDER.booleanType().build()));
+        MetadataResult<OutputMetadataDescriptor> outputMetadataDescriptor = metadata.get().getOutputMetadata();
 
-        assertThat(metadata.get().getContentMetadata().get().getType(), is(TYPE_BUILDER.stringType().build()));
+        MetadataResult<TypeMetadataDescriptor> payloadMetadata = outputMetadataDescriptor.get().getPayloadMetadata();
+        assertThat(payloadMetadata.get().getType(), is(TYPE_BUILDER.booleanType().build()));
 
+        MetadataResult<TypeMetadataDescriptor> attributesMetadata = outputMetadataDescriptor.get().getAttributesMetadata();
+        assertThat(attributesMetadata.get().getType(), is(TYPE_BUILDER.booleanType().build()));
+
+        assertThat(metadata.get().getContentMetadata().get().get().getType(), is(TYPE_BUILDER.stringType().build()));
         assertThat(metadata.get().getParametersMetadata().size(), is(1));
-        assertThat(metadata.get().getParametersMetadata().get(0).getType(), is(stringType));
+        assertThat(metadata.get().getParametersMetadata().get(0).get().getType(), is(stringType));
     }
 
     private OperationMessageProcessor createOperationMessageProcessor() throws Exception
