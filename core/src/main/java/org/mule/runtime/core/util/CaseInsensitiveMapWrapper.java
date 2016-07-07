@@ -49,6 +49,10 @@ public class CaseInsensitiveMapWrapper<T> implements Map<String, T>, Serializabl
         }
     }
 
+    /**
+     * Created a new instance using an existing map.
+     * @param map  existing map
+     */
     public CaseInsensitiveMapWrapper(Map<String, T> map)
     {
         baseMap = new HashMap<>();
@@ -289,8 +293,15 @@ public class CaseInsensitiveMapWrapper<T> implements Map<String, T>, Serializabl
         protected abstract B convert(A next);
     }
 
-    public Map<String, Serializable> asHashMap()
+    /**
+     * Returns the base map.  This is required for serialization.
+     *
+     * @return the base map
+     * copy of {@code this} map's entries
+     */
+    public Map<CaseInsensitiveMapKey, T> getBaseMap()
     {
-        return new HashMap(baseMap);
+        return baseMap;
     }
+
 }
