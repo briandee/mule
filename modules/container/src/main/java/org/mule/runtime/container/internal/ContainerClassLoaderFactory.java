@@ -9,6 +9,7 @@ package org.mule.runtime.container.internal;
 
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy;
+import org.mule.runtime.module.artifact.classloader.EnumerationAdapter;
 import org.mule.runtime.module.artifact.classloader.FilteringArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.MuleArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.MuleClassLoaderLookupPolicy;
@@ -17,6 +18,7 @@ import com.google.common.collect.ImmutableSet;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -114,7 +116,8 @@ public class ContainerClassLoaderFactory
             public Enumeration<URL> findResources(String name) throws IOException
             {
                 // Container classLoader is just an adapter, must find resources on the parent
-                return parentClassLoader.getResources(name);
+                //return parentClassLoader.getResources(name);
+                return new EnumerationAdapter(Collections.emptyList());
             }
         };
 
